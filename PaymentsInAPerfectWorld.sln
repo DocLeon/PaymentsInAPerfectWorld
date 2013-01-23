@@ -1,8 +1,34 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Penny.specs", "test\Penny.specs\Penny.specs.csproj", "{5BB1241F-CA8C-43C8-9B86-D5421AD1F2AA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8369AB92-2C4B-42DD-AE7A-FACAFCEDDBB0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{A3B7048B-C69F-4616-A260-E4F49F7F2EDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Penny", "src\Penny\Penny.csproj", "{690EF67E-12D9-4479-81C4-B957E9305FC1}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5BB1241F-CA8C-43C8-9B86-D5421AD1F2AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BB1241F-CA8C-43C8-9B86-D5421AD1F2AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BB1241F-CA8C-43C8-9B86-D5421AD1F2AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BB1241F-CA8C-43C8-9B86-D5421AD1F2AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{690EF67E-12D9-4479-81C4-B957E9305FC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{690EF67E-12D9-4479-81C4-B957E9305FC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{690EF67E-12D9-4479-81C4-B957E9305FC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{690EF67E-12D9-4479-81C4-B957E9305FC1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{690EF67E-12D9-4479-81C4-B957E9305FC1} = {8369AB92-2C4B-42DD-AE7A-FACAFCEDDBB0}
+		{5BB1241F-CA8C-43C8-9B86-D5421AD1F2AA} = {A3B7048B-C69F-4616-A260-E4F49F7F2EDC}
 	EndGlobalSection
 EndGlobal
