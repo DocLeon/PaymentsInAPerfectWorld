@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Mail;
 using NUnit.Framework;
 
 namespace Penny.specs
@@ -20,10 +21,10 @@ namespace Penny.specs
 		}
 		
 		[Test]
-		public void should_send_an_order_received_email_to_customer()
+		public void should_send_an_acknowledge_order_email_to_customer()
 		{
 			_customer.SendsOrder();	
-			_customer.HasReceivedOrderReceivedMessage();
+			_customer.HasReceivedOrderAcknowledgment();
 		}
 
 		[TestFixtureTearDown]
@@ -35,18 +36,13 @@ namespace Penny.specs
 
 	internal class Customer
 	{		
-		public object HasReceivedOrderReceivedMessageToCustomerFromApplication
-		{
-			get { throw new System.NotImplementedException(); }
-			set { throw new System.NotImplementedException(); }
-		}
-
 		public void SendsOrder()
 		{
-			throw new System.NotImplementedException();
+            var smtpClient = new SmtpClient("localhost");
+		    smtpClient.Send(new MailMessage("customer@mail.local", "test@mail.local"));
 		}
 
-		public void HasReceivedOrderReceivedMessage()
+		public void HasReceivedOrderAcknowledgment()
 		{
 			throw new System.NotImplementedException();
 		}
