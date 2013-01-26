@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Mail;
 using NUnit.Framework;
+using Pop3;
 
 namespace Penny.specs
 {
@@ -41,10 +42,11 @@ namespace Penny.specs
             var smtpClient = new SmtpClient("localhost");
 		    smtpClient.Send(new MailMessage("customer@mail.local", "test@mail.local"));
 		}
-
 		public void HasReceivedOrderAcknowledgment()
 		{
-			throw new System.NotImplementedException();
+		    var pop3Client = new Pop3Client();
+            pop3Client.Connect("localhost","test@mail.local","password");
+            Assert.That(pop3Client.IsConnected,"connected to mail server");
 		}
 	}
 
