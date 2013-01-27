@@ -20,9 +20,7 @@ namespace Penny
         {
             _password = password;
             _userAddress = userAddress;
-            _server = server;
-            WaitForMail();
-            ProcessMessage();
+            _server = server;            
         }
 
         public void WaitForMail()
@@ -34,28 +32,38 @@ namespace Penny
                 pop3Client.Disconnect();
                 Thread.Sleep(5);
                 pop3Client.Connect(_server, _userAddress, _password);
+                ProcessMessage();
             }
         }
     }
 
-    class Program
-	{
+    class Program	{
 	    private static string _server = "localhost";
         private static string _userAddress = "test@mail.local";
 	    private static string _password = "password";
 
         static void Main(string[] args)
         {
+            var mailTranslator = new MailTranslator(new MailProcessor());
             new MailListener(_password, _userAddress, _server)
                 {
-                   ProcessMessage = ProcessMessage
-                };
+                   ProcessMessage = ()=>mailTranslator.Process(new Pop3Message())
+                }.WaitForMail();
 	    }
 
-	    private static void ProcessMessage()
+        public static void ProcessMessage()
 	    {
 	        var smtpClient = new SmtpClient(_server);
 	        smtpClient.Send(new MailMessage(_userAddress, "customer@mail.local"));
 	    }
+
 	}
+
+    internal class MailProcessor : IListenForOrders
+    {
+        public void OrderReceived()
+        {
+            Program.ProcessMessage();
+        }
+    }
 }
