@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Mail;
@@ -13,7 +12,7 @@ namespace Penny.specs
     public class PennyEndToEndTest
 	{
 	    public const string TEST_MAIL_SERVER = "localhost";
-	    private const string PENNY_PASSWORD = "password";
+	    public const string CUSTOMER_PASSWORD = "password";
 	    public const string PENNY_EMAIL_ADDRESS = "test@mail.local";
 	    
         private ApplicationRunner _application;
@@ -24,8 +23,9 @@ namespace Penny.specs
 		public void SetUpFixture()
 		{
 	        
-	        _mailServer = new MailServer(TEST_MAIL_SERVER, PENNY_EMAIL_ADDRESS, PENNY_PASSWORD);
-		    _mailServer.ClearMailBox();
+	        _mailServer = new MailServer(TEST_MAIL_SERVER, CUSTOMER_PASSWORD);
+		    _mailServer.ClearMailBox(CUSTOMER_EMAIL_ADDRESS);
+            _mailServer.ClearMailBox(PENNY_EMAIL_ADDRESS);
 		    _application = new ApplicationRunner();
 			_application.Start();
 			_customer = new Customer();
@@ -50,21 +50,19 @@ namespace Penny.specs
     public class MailServer
     {
         private readonly string _server;
-        private readonly string _userAddress;
         private readonly string _password;
         private readonly Pop3Client _pop3Client;
 
-        public MailServer(string server, string userAddress, string password)
+        public MailServer(string server, string password)
         {
             _server = server;
-            _userAddress = userAddress;
             _password = password;
             _pop3Client = new Pop3Client();
         }
 
-        public void ClearMailBox()
+        public void ClearMailBox(string mailBoxToClear)
         {
-            _pop3Client.Connect(_server, _userAddress, _password);
+            _pop3Client.Connect(_server, mailBoxToClear, _password);
             try
             {
                 var messages = _pop3Client.List();
@@ -77,16 +75,16 @@ namespace Penny.specs
             }
         }
 
-        public List<Pop3Message> GetMailMessages()
+        public List<Pop3Message> GetMailMessages(string mailBoxToRead, string password)
         {
             var pop3Client = new Pop3Client();
-            pop3Client.Connect(_server, _userAddress, _password);
+            pop3Client.Connect(_server, mailBoxToRead, password);
             var polls = 0;
             while ((pop3Client.List() as List<Pop3Message>).Count == 0 && polls < 100)
             {
                 pop3Client.Disconnect();
                 Thread.Sleep(5);
-                pop3Client.Connect(_server, _userAddress, _password);
+                pop3Client.Connect(_server, mailBoxToRead, password);
                 polls++;
             }
             var pop3Messages = pop3Client.List() as List<Pop3Message>;
@@ -103,7 +101,8 @@ namespace Penny.specs
 		}
 		public void HasReceivedOrderAcknowledgment()
 		{
-		    var mailMessages = new MailServer(PennyEndToEndTest.TEST_MAIL_SERVER,PennyEndToEndTest.CUSTOMER_EMAIL_ADDRESS,"password").GetMailMessages();
+		    var mailMessages = new MailServer(PennyEndToEndTest.TEST_MAIL_SERVER, PennyEndToEndTest.CUSTOMER_PASSWORD)
+		        .GetMailMessages(PennyEndToEndTest.CUSTOMER_EMAIL_ADDRESS, PennyEndToEndTest.CUSTOMER_PASSWORD);
 		    Assert.That(mailMessages.Count, Is.EqualTo(1), "Messages received") ;
 		}
 	}
