@@ -11,9 +11,9 @@ namespace Penny
             _orderListener = orderListener;
         }
 
-        public void Process(Pop3Message mailMessage)
+        public void Process(OrderMessage mailMessage)
         {
-            _orderListener.OrderReceived();
+            _orderListener.OrderReceived(mailMessage.From);
         }
     }
 }

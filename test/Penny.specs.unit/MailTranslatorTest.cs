@@ -20,9 +20,20 @@ namespace Penny.specs.unit
         [Test]
         public void should_notify_order_received_when_mail_arrives()
         {
-            var mailMessage = new Pop3Message();
+            var mailMessage = new OrderMessage();
             _mailTranslator.Process(mailMessage);
-            _orderListener.AssertWasCalled(l=>l.OrderReceived());
+            _orderListener.AssertWasCalled(l=>l.OrderReceived(Arg<string>.Is.Anything));
+        }
+
+        [Test]
+        public void should_notify_order_received_with_mail_sender_address()
+        {
+            var mailMessage = new OrderMessage
+                {
+                    From = "customer"
+                };
+            _mailTranslator.Process(mailMessage);
+            _orderListener.AssertWasCalled(l=>l.OrderReceived(mailMessage.From));
         }
     }
 }

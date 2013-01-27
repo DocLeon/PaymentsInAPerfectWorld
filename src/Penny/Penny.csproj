@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="IListenForOrders.cs" />
     <Compile Include="MailTranslator.cs" />
+    <Compile Include="OrderMessage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

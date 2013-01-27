@@ -2,6 +2,6 @@
 {
     public interface IListenForOrders
     {
-        void OrderReceived();
+        void OrderReceived(string unknown);
     }
 }

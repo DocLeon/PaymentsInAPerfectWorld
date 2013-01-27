@@ -47,7 +47,7 @@ namespace Penny
             var mailTranslator = new MailTranslator(new MailProcessor());
             new MailListener(_password, _userAddress, _server)
                 {
-                   ProcessMessage = ()=>mailTranslator.Process(new Pop3Message())
+                   ProcessMessage = ()=>mailTranslator.Process(new OrderMessage())
                 }.WaitForMail();
 	    }
 
@@ -61,7 +61,7 @@ namespace Penny
 
     internal class MailProcessor : IListenForOrders
     {
-        public void OrderReceived()
+        public void OrderReceived(string unknown)
         {
             Program.ProcessMessage();
         }
