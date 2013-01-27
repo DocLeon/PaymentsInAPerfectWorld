@@ -29,6 +29,7 @@ namespace Penny.specs
 	        _mailServer = new MailServer(TEST_MAIL_SERVER, CUSTOMER_PASSWORD);
 		    _mailServer.ClearMailBox(CUSTOMER_EMAIL_ADDRESS);
             _mailServer.ClearMailBox(PENNY_EMAIL_ADDRESS);
+            _mailServer.ClearMailBox(DIFFERENT_CUSTOMER_EMAIL_ADDRESS);
 		    _application = new ApplicationRunner();
 			_application.Start();
 			_customer = new Customer(CUSTOMER_EMAIL_ADDRESS);

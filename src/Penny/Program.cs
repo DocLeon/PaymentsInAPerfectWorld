@@ -8,14 +8,25 @@ using Pop3;
 
 namespace Penny
 {
-	class Program
-	{
-	    private static string _server = "localhost";
-        private static string _userAddress = "test@mail.local";
-	    private static string _password = "password";
+    class MailListener
+    {
+        private readonly string _server;
+        private readonly string _userAddress;
+        private readonly string _password;
 
-	    static void Main(string[] args)
-		{
+        public Action ProcessMessage { get; set; }
+
+        public MailListener(string password, string userAddress, string server)
+        {
+            _password = password;
+            _userAddress = userAddress;
+            _server = server;
+            WaitForMail();
+            ProcessMessage();
+        }
+
+        public void WaitForMail()
+        {
             var pop3Client = new Pop3Client();
             pop3Client.Connect(_server, _userAddress, _password);
             while ((pop3Client.List() as List<Pop3Message>).Count == 0)
@@ -24,8 +35,27 @@ namespace Penny
                 Thread.Sleep(5);
                 pop3Client.Connect(_server, _userAddress, _password);
             }
-            var smtpClient = new SmtpClient(_server);
-            smtpClient.Send(new MailMessage(_userAddress,"customer@mail.local"));
         }
+    }
+
+    class Program
+	{
+	    private static string _server = "localhost";
+        private static string _userAddress = "test@mail.local";
+	    private static string _password = "password";
+
+        static void Main(string[] args)
+        {
+            new MailListener(_password, _userAddress, _server)
+                {
+                   ProcessMessage = ProcessMessage
+                };
+	    }
+
+	    private static void ProcessMessage()
+	    {
+	        var smtpClient = new SmtpClient(_server);
+	        smtpClient.Send(new MailMessage(_userAddress, "customer@mail.local"));
+	    }
 	}
 }
