@@ -25,24 +25,4 @@ namespace Penny.specs.unit
             _orderListener.AssertWasCalled(l=>l.OrderReceived());
         }
     }
-
-    internal class MailTranslator
-    {
-        private readonly IListenForOrders _orderListener;
-
-        public MailTranslator(IListenForOrders orderListener)
-        {
-            _orderListener = orderListener;
-        }
-
-        public void Process(Pop3Message mailMessage)
-        {
-            _orderListener.OrderReceived();
-        }
-    }
-
-    public interface IListenForOrders
-    {
-        void OrderReceived();
-    }
 }
