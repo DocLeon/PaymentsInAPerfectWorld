@@ -1,4 +1,5 @@
-﻿using Pop3;
+﻿using System;
+using Pop3;
 
 namespace Penny
 {
@@ -13,6 +14,7 @@ namespace Penny
 
         public void Process(OrderMessage mailMessage)
         {
+            Console.WriteLine(mailMessage.From);
             _orderListener.OrderReceived(mailMessage.From);
         }
     }

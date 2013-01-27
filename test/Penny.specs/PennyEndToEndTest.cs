@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Mail;
@@ -22,8 +23,8 @@ namespace Penny.specs.e2e
         public const string CUSTOMER_EMAIL_ADDRESS = "customer@mail.local";
         private const string DIFFERENT_CUSTOMER_EMAIL_ADDRESS = "RobDaBank@mail.local";
 
-	    [TestFixtureSetUp]
-		public void SetUpFixture()
+	    [SetUp]
+		public void SetUp()
 		{
 	        
 	        _mailServer = new MailServer(TEST_MAIL_SERVER, CUSTOMER_PASSWORD);
@@ -50,8 +51,8 @@ namespace Penny.specs.e2e
             _aDifferentCustomer.HasReceivedOrderAcknowledgment();
         }
 
-		[TestFixtureTearDown]
-		public void TearDownFixture()
+		[TearDown]
+		public void TearDown()
 		{
 			_application.Stop();			
 		}
@@ -91,16 +92,23 @@ namespace Penny.specs.e2e
         {
             var pop3Client = new Pop3Client();
             pop3Client.Connect(_server, mailBoxToRead, password);
-            var polls = 0;
-            while ((pop3Client.List() as List<Pop3Message>).Count == 0 && polls < 100)
+            try
+            {
+                var polls = 0;
+                while ((pop3Client.List() as List<Pop3Message>).Count == 0 && polls < 100)
+                {
+                    pop3Client.Disconnect();
+                    Thread.Sleep(5);
+                    pop3Client.Connect(_server, mailBoxToRead, password);
+                    polls++;
+                }
+                var pop3Messages = pop3Client.List() as List<Pop3Message>;   
+                return pop3Messages;
+            }
+            finally
             {
                 pop3Client.Disconnect();
-                Thread.Sleep(5);
-                pop3Client.Connect(_server, mailBoxToRead, password);
-                polls++;
             }
-            var pop3Messages = pop3Client.List() as List<Pop3Message>;
-            return pop3Messages;
         }
     }
 

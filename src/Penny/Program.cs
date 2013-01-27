@@ -14,7 +14,7 @@ namespace Penny
         private readonly string _userAddress;
         private readonly string _password;
 
-        public Action ProcessMessage { get; set; }
+        public Action<OrderMessage> ProcessMessage { get; set; }
 
         public MailListener(string password, string userAddress, string server)
         {
@@ -32,12 +32,16 @@ namespace Penny
                 pop3Client.Disconnect();
                 Thread.Sleep(5);
                 pop3Client.Connect(_server, _userAddress, _password);
-                ProcessMessage();
             }
+            Pop3Message message = pop3Client.List().First();
+            pop3Client.Retrieve(message);
+            ProcessMessage(new OrderMessage { From = message.From });
+            pop3Client.Disconnect();
         }
     }
 
-    class Program	{
+    class Program
+    {
 	    private static string _server = "localhost";
         private static string _userAddress = "test@mail.local";
 	    private static string _password = "password";
@@ -47,23 +51,23 @@ namespace Penny
             var mailTranslator = new MailTranslator(new MailProcessor());
             new MailListener(_password, _userAddress, _server)
                 {
-                   ProcessMessage = ()=>mailTranslator.Process(new OrderMessage())
+                   ProcessMessage = msg=>mailTranslator.Process(msg)
                 }.WaitForMail();
 	    }
 
-        public static void ProcessMessage()
+        public static void ProcessMessage(string from)
 	    {
 	        var smtpClient = new SmtpClient(_server);
-	        smtpClient.Send(new MailMessage(_userAddress, "customer@mail.local"));
+	        smtpClient.Send(new MailMessage(_userAddress, from));
 	    }
 
 	}
 
     internal class MailProcessor : IListenForOrders
     {
-        public void OrderReceived(string unknown)
+        public void OrderReceived(string from)
         {
-            Program.ProcessMessage();
+            Program.ProcessMessage(from);
         }
     }
 }
