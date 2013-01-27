@@ -13,8 +13,8 @@ namespace Penny.specs.unit
         [SetUp]
         public void SetUp()
         {
-            _mailTranslator = new MailTranslator();
             _orderListener = MockRepository.GenerateMock<IListenForOrders>();
+            _mailTranslator = new MailTranslator(_orderListener);
         }
         
         [Test]
@@ -22,19 +22,27 @@ namespace Penny.specs.unit
         {
             var mailMessage = new Pop3Message();
             _mailTranslator.Process(mailMessage);
-            _orderListener.AssertWasCalled(l=>l.orderReceived());
+            _orderListener.AssertWasCalled(l=>l.OrderReceived());
         }
     }
 
     internal class MailTranslator
     {
+        private readonly IListenForOrders _orderListener;
+
+        public MailTranslator(IListenForOrders orderListener)
+        {
+            _orderListener = orderListener;
+        }
+
         public void Process(Pop3Message mailMessage)
         {
+            _orderListener.OrderReceived();
         }
     }
 
     public interface IListenForOrders
     {
-        void orderReceived();
+        void OrderReceived();
     }
 }
