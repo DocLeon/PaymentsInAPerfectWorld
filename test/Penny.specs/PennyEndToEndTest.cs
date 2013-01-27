@@ -18,6 +18,9 @@ namespace Penny.specs
         private ApplicationRunner _application;
 	    private Customer _customer;
 	    private MailServer _mailServer;
+	    private Customer _aDifferentCustomer;
+        public const string CUSTOMER_EMAIL_ADDRESS = "customer@mail.local";
+        private const string DIFFERENT_CUSTOMER_EMAIL_ADDRESS = "RobDaBank@mail.local";
 
 	    [TestFixtureSetUp]
 		public void SetUpFixture()
@@ -28,15 +31,23 @@ namespace Penny.specs
             _mailServer.ClearMailBox(PENNY_EMAIL_ADDRESS);
 		    _application = new ApplicationRunner();
 			_application.Start();
-			_customer = new Customer();
+			_customer = new Customer(CUSTOMER_EMAIL_ADDRESS);
+            _aDifferentCustomer = new Customer(DIFFERENT_CUSTOMER_EMAIL_ADDRESS);
 		}
 
 	    [Test]
-		public void should_send_an_acknowledge_order_email_to_customer()
+		public void should_send_an_acknowledge_order_email()
 		{
 			_customer.SendsOrder();	
 			_customer.HasReceivedOrderAcknowledgment();
 		}
+
+        [Test]
+        public void should_send_an_acknowledgement_order_to_customer_that_sent_order()
+        {
+            _aDifferentCustomer.SendsOrder();
+            _aDifferentCustomer.HasReceivedOrderAcknowledgment();
+        }
 
 		[TestFixtureTearDown]
 		public void TearDownFixture()
@@ -44,7 +55,7 @@ namespace Penny.specs
 			_application.Stop();			
 		}
 
-	    public const string CUSTOMER_EMAIL_ADDRESS = "customer@mail.local";
+	    
 	}
 
     public class MailServer
@@ -94,15 +105,22 @@ namespace Penny.specs
 
     internal class Customer
 	{
+        private readonly string _customerEmailAddress;
+
+        public Customer(string customerEmailAddress)
+        {
+            _customerEmailAddress = customerEmailAddress;
+        }
+
         public void SendsOrder()
 		{
             var smtpClient = new SmtpClient(PennyEndToEndTest.TEST_MAIL_SERVER);
-		    smtpClient.Send(new MailMessage(PennyEndToEndTest.CUSTOMER_EMAIL_ADDRESS, PennyEndToEndTest.PENNY_EMAIL_ADDRESS));
+		    smtpClient.Send(new MailMessage(_customerEmailAddress, PennyEndToEndTest.PENNY_EMAIL_ADDRESS));
 		}
 		public void HasReceivedOrderAcknowledgment()
 		{
 		    var mailMessages = new MailServer(PennyEndToEndTest.TEST_MAIL_SERVER, PennyEndToEndTest.CUSTOMER_PASSWORD)
-		        .GetMailMessages(PennyEndToEndTest.CUSTOMER_EMAIL_ADDRESS, PennyEndToEndTest.CUSTOMER_PASSWORD);
+		        .GetMailMessages(_customerEmailAddress, PennyEndToEndTest.CUSTOMER_PASSWORD);
 		    Assert.That(mailMessages.Count, Is.EqualTo(1), "Messages received") ;
 		}
 	}
