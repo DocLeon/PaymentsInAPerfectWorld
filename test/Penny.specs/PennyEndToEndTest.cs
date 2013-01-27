@@ -6,7 +6,7 @@ using System.Threading;
 using NUnit.Framework;
 using Pop3;
 
-namespace Penny.specs
+namespace Penny.specs.e2e
 {
 	[TestFixture]
     public class PennyEndToEndTest
